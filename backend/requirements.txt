@@ -1,1 +1,8 @@
 fastapi
+chromadb
+langchain_text_splitters
+transformers
+langchain_core
+groq
+langchain
+python-dotenv

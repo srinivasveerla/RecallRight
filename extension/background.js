@@ -9,7 +9,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             headers: {
                 'Content-Type': "application/json",
             },
-            body: JSON.stringify({ text: selectedText }),
+            body: JSON.stringify({"content": selectedText.content, "source": selectedText.source}),
         })
         .then(response => response.json())
         .then(data => console.log('Data sent successfully:', data))
