@@ -1,0 +1,15 @@
+body{
+    width: 300px;
+    height: fit-content;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    padding-top:2px;
+    padding-bottom:5px
+}
+
+#authorElement{
+    text-align: right;
+    font-size: 14px;
+}
+
+

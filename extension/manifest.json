@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "Recall Right",
+    "version": "1.0",
+    "description": "Recall Right extension to help you remember things",
+    
+    "host_permissions": [
+        "http://localhost/*"
+    ],
+    "content_scripts": [
+        {
+          "matches": ["<all_urls>"],   
+          "js": ["contentScript.js"]
+        }
+      ],
+    "permissions": [
+      "activeTab",
+      "scripting"
+    ],
+    "background": {
+      "service_worker": "background.js"  
+    }
+  }
+  
