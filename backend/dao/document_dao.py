@@ -43,4 +43,4 @@ class DocumentDao:
     def get_tags(self):
         all_embeddings = self.content_db.get(include=['metadatas'])
         all_tags = [item.get('tags') for item in all_embeddings['metadatas'] if 'tags' in item]
-        return all_embeddings
+        return all_tags

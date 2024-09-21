@@ -1,3 +1,5 @@
+from langchain.output_parsers import PydanticOutputParser
+
 class LLMUtils:
 
     def __init__(self, client) -> None:
@@ -17,3 +19,8 @@ class LLMUtils:
             temperature = temperature
         )
         return chat_completion.choices[0].message.content
+    
+    def structured_query(self, pydantic_class, prompt):
+        output_parser = PydanticOutputParser(pydantic_object=pydantic_class)
+        response = self.query(prompt)
+        return output_parser.parse(response)

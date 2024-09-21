@@ -17,6 +17,6 @@ async def read_root(request: RecallRequest):
     return {"message": "Data received successfully"}
 
 @app.get("/tags")
-async def get_tags(count = 10):
-    tags = content_service.get_tags(count)
-    return {"data": tags}
+async def get_tags(count: int = 10):
+    if(count > 100 or count < 0): count = 100
+    return content_service.get_tags(count)
