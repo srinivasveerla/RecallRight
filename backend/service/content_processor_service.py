@@ -46,7 +46,23 @@ class ContentProcessorService:
                         {chunk.page_content}
                 """
         return self.__llm.query(prompt)
+    
 
+    def __clean_tags(self, tags, count):
+       prompt = f"""Based on the given tags below, remove all tags that are redundant, not useful, or irrelevant. Return only the {count} most relevant tags.
+        
+        The purpose of these tags is for a user to select them when revisiting the content they read. 
+        
+        IMPORTANT:
+        - Do NOT return anything other than the tags. VERY VERY IMPORTANT. DON'T RETURN ANYTHING ELSE.
+        - The output must be sorted lexicographically in lowercase.
+        - Format the output exactly as: <tag1>, <tag2>, <tag3>
+        - Example of correct output: "tag1, tag2, tag3"
+
+        Here are the tags: {tags}
+        """
+       return self.__llm.query(prompt)
+    
     def __insert(self, text, meta_data):
             chunks = self.__chunk_data(text, meta_data)
             doc_list = []
@@ -96,3 +112,8 @@ class ContentProcessorService:
     
     def remove(self, ids):
         self.__dao.remove_document(ids)
+
+    def get_tags(self, count):
+        all_tags = self.__dao.get_tags()
+        cleaned_tags = self.__clean_tags(all_tags, count)
+        return cleaned_tags.split(",")

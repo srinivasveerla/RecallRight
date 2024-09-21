@@ -15,3 +15,8 @@ async def read_root(request: RecallRequest):
     # print(raw_body.decode())
     content_service.upsert(request)
     return {"message": "Data received successfully"}
+
+@app.get("/tags")
+async def get_tags(count = 10):
+    tags = content_service.get_tags(count)
+    return {"data": tags}

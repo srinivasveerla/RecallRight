@@ -39,3 +39,8 @@ class DocumentDao:
     def remove_document(self, ids):
         self.content_db.delete(ids = ids)
         self.tag_db.delete(ids = ids)
+
+    def get_tags(self):
+        all_embeddings = self.content_db.get(include=['metadatas'])
+        all_tags = [item.get('tags') for item in all_embeddings['metadatas'] if 'tags' in item]
+        return all_embeddings
