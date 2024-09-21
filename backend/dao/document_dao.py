@@ -9,9 +9,9 @@ class DocumentDao:
         self.content_db = client.get_or_create_collection(name="content_collection",metadata={"hnsw:space": "cosine"})
 
 
-    def retrieve_similar(self, db, query, threshold = 0.7):
+    def retrieve_similar(self, db, query, threshold = 0.7, n_results = 100):
         """Takes in list of query texts and returns list of docs"""
-        results = db.query(query_texts = [query])
+        results = db.query(query_texts = [query], n_results=n_results)
         for ind in range(len(results['distances'][0])):
             dist = results['distances'][0][ind]
             if dist > threshold:
@@ -26,11 +26,11 @@ class DocumentDao:
             return None
         
 
-    def retrieve_by_tags(self, query):
-        return self.retrieve_similar(self.tags_db, query)
+    def retrieve_by_tags(self, query, n_results=100):
+        return self.retrieve_similar(self.tags_db, query, n_results)
     
-    def retrieve_by_content(self, query):
-        return self.retrieve_similar(self.content_db, query)
+    def retrieve_by_content(self, query, n_results=100):
+        return self.retrieve_similar(self.content_db, query, n_results)
 
     def store_document(self, document: Document):
         self.tag_db.add(documents = document.tags, ids=document.ids, metadatas = document.tags_metadata)

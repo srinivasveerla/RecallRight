@@ -8,6 +8,8 @@ import os
 
 from models.document import Document
 from models.metadata import Metadata
+from models.request import QnABySearchQuery
+from models.search_response import SearchResponse
 from dao.document_dao import DocumentDao 
 from utils.llm_utils import LLMUtils 
 
@@ -63,6 +65,38 @@ class ContentProcessorService:
         """
        return self.__llm.structured_query(Metadata, prompt)
     
+    def __questions_by_search_query(self, chunk, query, questions):
+        prompt = f"""
+            **IMPORTANT RULES:**
+                - **DO NOT** ask questions that are similar to these previously asked questions:
+                    {questions}
+                - Questions must be **completely different** from the previously asked questions. Do not ask rephrased, slightly altered, or redundant questions.
+                - **DO NOT** ask questions that focus on the same concept or idea as previously asked questions. Instead, generate questions that explore **new concepts** or details not covered by the prior questions.
+                - Ensure each question brings new information or insights from the content.
+
+
+            Based on the content provided below, generate relevant questions that helps users understand the key concepts or information. For each question, include multiple answer choices and identify the correct option with an explanation.
+
+
+            IMPORTANT:
+            - **DO NOT** return any questions if the given content doesn't match the query: {query}
+            - The output MUST be a valid JSON object with **NO additional explanation or commentary outside of the JSON**.
+            - Return the output **ONLY** as a JSON object in this format:
+                {{"questions": [{{
+                    "question": "your question here",
+                    "options": ["option1", "option2", "option3"],
+                    "correct_option": "the correct option",
+                    "explanation": "why the correct option is correct"
+                }}]}}
+            - Ensure the explanation clearly justifies why the selected answer is correct.
+            - **DO NOT** return any questions if the given content doesn't match the query: {query}
+            - Do not include any introductory text like "Here is the generated question" before the JSON.
+
+            Here is the content to base the questions on:
+            {chunk}
+            """
+        return self.__llm.structured_query(SearchResponse, prompt)
+    
     def __insert(self, text, meta_data):
             chunks = self.__chunk_data(text, meta_data)
             doc_list = []
@@ -117,3 +151,16 @@ class ContentProcessorService:
         all_tags = self.__dao.get_tags()
         cleaned_tags = self.__clean_tags(all_tags, count)
         return cleaned_tags
+    
+    def questions_by_search_query(self, request: QnABySearchQuery):
+        documents = self.__dao.retrieve_by_content(request.query, 100)
+        chunks = [item for item in documents['documents'][0]]
+        covered_questions = []
+        questions = []
+        for chunk in chunks:
+            response: SearchResponse = self.__questions_by_search_query(chunk, request.query, covered_questions)
+            questions.extend(response.questions)
+            covered_questions.extend(response.questions)
+            if(len(questions) > request.questions):
+                return questions
+        return questions
