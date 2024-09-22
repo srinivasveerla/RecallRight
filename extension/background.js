@@ -4,7 +4,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log("Received selected text:", selectedText);
 
         // Example: Send data to a server (you can replace this with any API call)
-        fetch('http://localhost:8000/data', {
+        fetch('http://localhost:8000/api/data', {
             method: 'POST',
             headers: {
                 'Content-Type': "application/json",

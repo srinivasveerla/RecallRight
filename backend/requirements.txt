@@ -6,3 +6,5 @@ langchain_core
 groq
 langchain
 python-dotenv
+nltk
+spacy

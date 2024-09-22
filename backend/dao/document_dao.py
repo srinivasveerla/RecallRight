@@ -43,6 +43,7 @@ class DocumentDao:
 
     def store_document(self, document: Document):
         self.tag_db.add(documents = document.tags, ids=document.ids, metadatas = document.tags_metadata)
+        print(document.content)
         self.content_db.add(documents = document.content, ids=document.ids, metadatas = document.content_metadata)
         
     def remove_document(self, ids):
