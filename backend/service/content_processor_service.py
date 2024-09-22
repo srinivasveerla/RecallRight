@@ -153,14 +153,16 @@ class ContentProcessorService:
         return cleaned_tags
     
     def questions_by_search_query(self, request: QnABySearchQuery):
-        documents = self.__dao.retrieve_by_content(request.query, 100)
-        chunks = [item for item in documents['documents'][0]]
-        covered_questions = []
+        documents = self.__dao.retrieve_by_content(request.query, n_results = 100, threshold=0.7)
+        print(documents)
         questions = []
-        for chunk in chunks:
-            response: SearchResponse = self.__questions_by_search_query(chunk, request.query, covered_questions)
-            questions.extend(response.questions)
-            covered_questions.extend(response.questions)
-            if(len(questions) > request.questions):
-                return questions
+        if documents:
+            chunks = [item for item in documents['documents']]
+            covered_questions = []
+            for chunk in chunks:
+                response: SearchResponse = self.__questions_by_search_query(chunk, request.query, covered_questions)
+                questions.extend(response.questions)
+                covered_questions.extend(response.questions)
+                if(len(questions) > request.questions):
+                    return questions
         return questions
